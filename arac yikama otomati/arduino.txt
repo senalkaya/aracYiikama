@@ -1,0 +1,493 @@
+#define buton5 13 
+#define buton10 12 
+#define buton20 11 
+#define buton50 10 
+#define buton100 9 
+#define bitis 8 
+#include <EEPROM.h>
+
+
+
+  int beslik=0;
+  int onluk=0;
+  int yirmilik=0;
+  int ellilik=0;
+  int yuzluk=0;
+  int total=0;
+  int kontrol=0;
+  int kopuk=0;
+  int yika=0;
+  int kurula=0;
+  int cila=0;
+  int maliyet;
+  int rastgele_sayi;
+  int paraustu=0;
+  int gecersiz=0;
+
+
+  
+  
+void setup() {
+
+ 
+   
+  pinMode(buton5,INPUT);
+  pinMode(buton10,INPUT);
+  pinMode(buton20,INPUT);
+  pinMode(buton50,INPUT);
+  pinMode(buton100,INPUT);
+  pinMode(7,OUTPUT);
+  pinMode(6,OUTPUT);
+
+  Serial.begin(9600);
+
+
+    int kasa[5];
+  
+  
+//KASA PARA BİLGİSİ
+
+//5
+  EEPROM.write(1,20); 
+//10
+  EEPROM.write(2,20);
+//20
+  EEPROM.write(3,10);
+//50 
+  EEPROM.write(4,30);
+//100  
+  EEPROM.write(5,5);
+
+  for(int i=0;i<5;i++){
+
+   kasa[i]=EEPROM.read(i+1);
+ }
+ 
+//HİZMET KALAN BİLGİSİ
+ //köpükleme
+  EEPROM.write(6,30);
+  //yıkama
+  EEPROM.write(7,50);
+  //kurulama
+  EEPROM.write(8,100);
+  //cila
+  EEPROM.write(9,20);
+
+}
+
+void loop() {
+int butond5 = digitalRead(buton5);  
+int butond10=digitalRead(buton10);
+int butond20=digitalRead(buton20);
+int butond50=digitalRead(buton50);
+int butond100=digitalRead(buton100);
+int bitisd=digitalRead(bitis);
+
+ int kopukleme[]={EEPROM.read(6),15};
+  int yikama[]={EEPROM.read(7),10};
+  int kurulama[]={EEPROM.read(8),5};
+  int cilalama[]={EEPROM.read(9),50};
+
+
+
+
+if (butond5 == HIGH) {  //BEŞLİK PARA ARTIRMA
+ if(kontrol==0){
+ beslik+=1;
+ Serial.print("Yüklenen 5 lira adedi: ");
+   Serial.println(beslik);
+   EEPROM.update(1,EEPROM.read(1)+1);
+ }
+
+ 
+ else if(kontrol==1 && kopukleme[0]>0){ 
+ kopuk++;
+ EEPROM.update(6,kopukleme[0]-1);
+ maliyet+=kopukleme[1];
+ Serial.print("Köpükleme işlem adedi: ");
+ Serial.println(kopuk);
+ }
+ 
+   
+   while(butond5==HIGH){
+  delay(10);  
+  butond5 = digitalRead(buton5);
+}
+ delay(10);
+} 
+
+
+
+//---------------------------------------------
+if (butond10 == HIGH) {  //ONLUK PARA ARTIRMA
+ 
+ if(kontrol==0){
+  onluk+=1;
+  Serial.print("Yüklenen 10 lira adedi: ");
+   Serial.println(onluk);
+   EEPROM.update(2,EEPROM.read(2)+1);
+ } 
+
+  else if(kontrol==1 && yikama[0]>0){ 
+ yika++;
+ EEPROM.update(7,yikama[0]-1);
+ maliyet+=yikama[1];
+ Serial.print("Yıkama işlem adedi: ");
+ Serial.println(yika);
+ }
+
+
+   while(butond10==HIGH){
+  delay(10);  
+  butond10 = digitalRead(buton10);
+}
+ delay(10);
+} 
+
+
+
+//---------------------------------------------
+if (butond20 == HIGH) {  //yirmilik PARA ARTIRMA
+
+ if(kontrol==0){
+ yirmilik+=1;
+ Serial.print("Yüklenen 20 lira adedi: ");
+   Serial.println(yirmilik);
+   EEPROM.update(3,EEPROM.read(3)+1);
+ }
+
+  else if(kontrol==1 && kurulama[0]>0){ 
+ kurula++;
+ EEPROM.update(8,kurulama[0]-1);
+ maliyet+=kurulama[1];
+ Serial.print("Kurulama işlem adedi: ");
+ Serial.println(kurula);
+ } 
+   while(butond20==HIGH){
+  delay(10);  
+  butond20 = digitalRead(buton20);
+}
+ delay(10);
+}
+
+
+
+//---------------------------------------------
+if (butond50 == HIGH) {  //ELLİLİK PARA ARTIRMA
+ 
+ if(kontrol==0){
+ ellilik+=1;
+ Serial.print("Yüklenen 50 lira adedi: ");
+   Serial.println(ellilik);
+   EEPROM.update(4,EEPROM.read(4)+1);
+ }
+
+  else if(kontrol==1 && cilalama[0]>0){ 
+ cila++;
+ EEPROM.update(9,cilalama[0]-1);
+ maliyet+=cilalama[1];
+ Serial.print("Cilalama işlem adedi: ");
+ Serial.println(cila);
+ }
+ 
+   while(butond50==HIGH){
+  delay(10);  
+  butond50 = digitalRead(buton50);
+}
+ delay(10);
+} 
+
+
+//---------------------------------------------
+if (butond100 == HIGH) {  //YUZLUK PARA ARTIRMA
+
+ if(kontrol==0){
+ yuzluk+=1;
+ Serial.print("Yüklenen 100 lira adedi: ");
+   Serial.println(yuzluk);
+   EEPROM.update(5,EEPROM.read(5)+1);
+ }
+
+else if(kontrol==1){
+
+Serial.println("RESET...İŞLEMİNİZ İPTAL EDİLİYOR");
+   
+   kontrol=0;
+   EEPROM.update(6,kopukleme[0]+kopuk);
+   EEPROM.update(7,yikama[0]+yika);
+   EEPROM.update(8,kurulama[0]+kurula);
+   EEPROM.update(9,cilalama[0]+cila);
+   
+   EEPROM.update(1,EEPROM.read(1)-beslik);
+   EEPROM.update(2,EEPROM.read(2)-onluk);
+   EEPROM.update(3,EEPROM.read(3)-yirmilik);
+   EEPROM.update(4,EEPROM.read(4)-ellilik);
+   EEPROM.update(5,EEPROM.read(5)-yuzluk);
+   
+  kopuk=0;
+  yika=0;
+  kurula=0;
+  cila=0;
+  maliyet=0;
+   beslik=0;
+  onluk=0;
+  yirmilik=0;
+  ellilik=0;
+  yuzluk=0;
+  total=0;
+  
+}
+  while(butond100==HIGH){
+  delay(10);  
+  butond100 = digitalRead(buton100);
+}
+ delay(10);
+} 
+
+//---------------------------------------------
+if(bitisd==HIGH){
+
+ 
+if(kontrol==0){
+total=beslik*5+onluk*10+yirmilik*20+ellilik*50+yuzluk*100;
+Serial.print("Toplam Yüklenen Para: ");
+Serial.println(total);
+kontrol=1;
+}
+
+else if(kontrol==1){
+
+Serial.print("Harcamanız:");
+Serial.println(maliyet); 
+
+ for(int i=0;i<1;i++){
+
+  randomSeed(analogRead(A0));
+  rastgele_sayi=random(1,5);
+  Serial.print("Atılan Rastgele Sayı:");
+  Serial.println(rastgele_sayi);
+ }
+
+
+if(rastgele_sayi!=2 && rastgele_sayi!=3 && rastgele_sayi!=5){
+  digitalWrite(7,HIGH);
+  delay(1000);
+  digitalWrite(7,LOW);
+
+  
+  int yuzsay=0,ellisay=0,yirmisay=0,onsay=0,bessay=0,kasapara,paraustu2;
+  
+  paraustu=total-maliyet;
+  paraustu2=paraustu;
+  
+
+ 
+  
+
+
+ 
+ if(paraustu/100>0 && EEPROM.read(5)>0)
+    {
+    if(EEPROM.read(5)>=(paraustu/100)){
+    yuzsay=paraustu/100;
+   paraustu -= 100*yuzsay;  
+    }
+    
+    else {
+    yuzsay=EEPROM.read(5);
+    paraustu-=EEPROM.read(5)*100;}
+  
+    }
+    
+  
+   if(paraustu/50>0 && EEPROM.read(4)>0)
+    {
+    if(EEPROM.read(4)>=(paraustu/50)){
+    ellisay=paraustu/50;
+ paraustu -= 50*ellisay;  
+    }
+    else {
+    ellisay=EEPROM.read(4);
+    paraustu-=EEPROM.read(4)*50;}
+   
+    }
+    
+  
+
+    if(paraustu/20>0 && EEPROM.read(3)>0)
+    {
+    if(EEPROM.read(3)>=(paraustu/20)){
+    yirmisay=paraustu/20;
+ paraustu -= 20*yirmisay;  
+    }
+   else {
+    yirmisay=EEPROM.read(3);
+    paraustu-=EEPROM.read(3)*20;}
+    }
+   
+  
+   if(paraustu/10>0 && EEPROM.read(2)>0)
+    {
+    if(EEPROM.read(2)>=(paraustu/10)){
+    onsay=paraustu/10;
+    paraustu -= 10*onsay;  
+    }
+    else {
+    onsay=EEPROM.read(2);
+    paraustu-=EEPROM.read(2)*10;}
+    }
+    
+  
+  if(paraustu/5>0 && EEPROM.read(1)>0)
+    {
+    if(EEPROM.read(1)>=(paraustu/5)){
+    bessay=paraustu/5;
+    paraustu -= 5*bessay;  
+    }
+    else {
+    bessay=EEPROM.read(1);
+    paraustu-=EEPROM.read(1)*5;}
+    }
+    
+
+ if(paraustu2==yuzsay*100+ellisay*50+yirmisay*20+onsay*10+bessay*5){
+
+      EEPROM.update(1,EEPROM.read(1)-bessay);  
+      EEPROM.update(2,EEPROM.read(2)-onsay); 
+      EEPROM.update(3,EEPROM.read(3)-yirmisay); 
+      EEPROM.update(4,EEPROM.read(4)-ellisay); 
+      EEPROM.update(5,EEPROM.read(5)-yuzsay); 
+
+       kasapara=EEPROM.read(1)*5+EEPROM.read(2)*10+EEPROM.read(3)*20+EEPROM.read(4)*50+EEPROM.read(5)*100;
+       Serial.print("Kasada Kalan Para:");
+       Serial.println(kasapara);
+       Serial.println("PARA ÜSTÜNÜZ");
+ }
+ 
+  
+ if(paraustu2!=yuzsay*100+ellisay*50+yirmisay*20+onsay*10+bessay*5){
+
+    Serial.println("PARA ÜSTÜ VERİLEMİYOR...İŞLEMİNİZ İPTAL EDİLİYOR.");
+
+   EEPROM.update(6,kopukleme[0]+kopuk);
+   EEPROM.update(7,yikama[0]+yika);
+   EEPROM.update(8,kurulama[0]+kurula);
+   EEPROM.update(9,cilalama[0]+cila);
+   
+   EEPROM.update(1,EEPROM.read(1)-beslik);
+   EEPROM.update(2,EEPROM.read(2)-onluk);
+   EEPROM.update(3,EEPROM.read(3)-yirmilik);
+   EEPROM.update(4,EEPROM.read(4)-ellilik);
+   EEPROM.update(5,EEPROM.read(5)-yuzluk);
+
+  kasapara=EEPROM.read(1)*5+EEPROM.read(2)*10+EEPROM.read(3)*20+EEPROM.read(4)*50+EEPROM.read(5)*100;
+   Serial.print("Kasada Kalan Para:");
+   Serial.println(kasapara);
+   
+   yuzsay=0;
+   ellisay=0;
+   yirmisay=0;
+   onsay=0;
+   bessay=0;
+  
+  }
+
+ 
+
+  
+  
+  
+  
+if(yuzsay!=0)
+    {
+        Serial.print(yuzsay);
+        Serial.println("tane 100 TL");
+        
+    }
+  
+  if(ellisay!=0){
+        Serial.print(ellisay);
+  Serial.println("tane 50 TL");
+  EEPROM.update(4,EEPROM.read(4)-ellisay);
+  }
+  
+  if(yirmisay!=0){
+         Serial.print(yirmisay);
+  Serial.println("tane 20 TL"); 
+  }
+   
+  if(onsay!=0){
+        Serial.print(onsay);
+  Serial.println("tane 10 TL");
+  }
+    
+  if(bessay!=0){
+         Serial.print(bessay);
+  Serial.println("tane 5 TL");
+    }
+
+ 
+
+  kopuk=0;
+  yika=0;
+  kurula=0;
+  cila=0;
+  maliyet=0;
+  beslik=0;
+  onluk=0;
+  yirmilik=0;
+  ellilik=0;
+  yuzluk=0;
+  total=0;
+  
+  
+}
+
+
+else if(rastgele_sayi==2){
+
+  digitalWrite(6,HIGH);
+  delay(1000);
+  digitalWrite(6,LOW);
+
+   EEPROM.update(6,kopukleme[0]+kopuk);
+   EEPROM.update(7,yikama[0]+yika);
+   EEPROM.update(8,kurulama[0]+kurula);
+   EEPROM.update(9,cilalama[0]+cila);
+
+   EEPROM.update(1,EEPROM.read(1)-beslik);
+   EEPROM.update(2,EEPROM.read(2)-onluk);
+   EEPROM.update(3,EEPROM.read(3)-yirmilik);
+   EEPROM.update(4,EEPROM.read(4)-ellilik);
+   EEPROM.update(5,EEPROM.read(5)-yuzluk);
+ 
+  kopuk=0;
+  yika=0;
+  kurula=0;
+  cila=0;
+  maliyet=0;
+  beslik=0;
+  onluk=0;
+  yirmilik=0;
+  ellilik=0;
+  yuzluk=0;
+  total=0;
+}
+ 
+ kontrol=0;
+ 
+}
+
+while(bitisd==HIGH){
+  delay(10);  
+  bitisd = digitalRead(bitis);
+  }
+
+  
+
+}
+
+
+ 
+
+}
